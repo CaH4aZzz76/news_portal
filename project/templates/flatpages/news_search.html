@@ -1,0 +1,29 @@
+{% extends "flatpages/default.html" %}
+{% load censor %}
+{% block content %}
+<h1>Поиск новостей</h1>
+
+<form method="get" action="{% url 'news_search' %}" class="mb-4">
+    <input type="text" name="title" placeholder="Название" value="{{ filter_values.title }}">
+    <input type="text" name="author" placeholder="Автор" value="{{ filter_values.author }}">
+    <input type="date" name="date_from" placeholder="Дата с" value="{{ filter_values.date_from }}">
+    <button type="submit">Поиск</button>
+</form>
+
+<ul>
+{% for item in news %}
+    <li>
+        <a href="{% url 'news_detail' item.pk %}">
+            {{ item.title|censor }}
+        </a><br>
+        {{ item.created_at|date:"d.m.Y" }}<br>
+        {{ item.content|slice:":100"|censor }}...
+    </li>
+{% empty %}
+    <li>Новостей не найдено</li>
+{% endfor %}
+</ul>
+
+{% include 'pagination.html' %}
+
+{% endblock %}
