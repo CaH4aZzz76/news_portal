@@ -1,9 +1,11 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django import forms
 from .models import Post
+
 
 
 class NewsListView(ListView):
@@ -85,7 +87,9 @@ class PostForm(forms.ModelForm):
         fields = ['author', 'title', 'content', 'categories']
 
 
-class NewsCreateView(CreateView):
+class NewsCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = 'news.add_post'
+    login_url = '/accounts/login/'
     model = Post
     form_class = PostForm
     template_name = 'flatpages/post_form.html'
@@ -98,7 +102,9 @@ class NewsCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ArticleCreateView(CreateView):
+class ArticleCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = 'news.add_post'
+    login_url = '/accounts/login/'
     model = Post
     form_class = PostForm
     template_name = 'flatpages/post_form.html'
@@ -111,7 +117,9 @@ class ArticleCreateView(CreateView):
         return super().form_valid(form)
 
 
-class PostUpdateView(UpdateView):
+class PostUpdateView(LoginRequiredMixin, UpdateView):
+    permission_required = 'news.change_post'
+    login_url = '/accounts/login/'
     model = Post
     form_class = PostForm
     template_name = 'flatpages/post_form.html'
